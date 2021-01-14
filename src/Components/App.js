@@ -1,8 +1,7 @@
 import { Component } from 'react';
+import Searchbar from './Searchbar/Searchbar';
 import ImageGallery from './ImageGallery/ImageGallery';
 import Button from './Button/Button';
-
-import Searchbar from './Searchbar/Searchbar';
 
 class App extends Component {
   state = {
@@ -19,14 +18,11 @@ class App extends Component {
   };
 
   render() {
+    const { inputValue, page } = this.state;
     return (
       <div>
         <Searchbar onSubmit={this.handleFormSubmit} />
-        <ImageGallery
-          inputValue={this.state.inputValue}
-          images={this.state.images}
-          page={this.state.page}
-        />
+        <ImageGallery inputValue={inputValue} page={page} />
         <Button onClick={this.handleBtnClick} />
       </div>
     );
