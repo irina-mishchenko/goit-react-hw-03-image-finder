@@ -1,3 +1,10 @@
+.ImageGalleryContainer {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: center;
+}
+
 .ImageGallery {
   display: grid;
   max-width: calc(100vw - 48px);

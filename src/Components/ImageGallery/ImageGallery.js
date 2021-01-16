@@ -1,8 +1,8 @@
 import { Component } from 'react';
 import propTypes from 'prop-types';
-import ImageGalleryItem from './ImageGalleryItem/ImageGalleryItem';
-
 import Loader from 'react-loader-spinner';
+import ImageGalleryItem from './ImageGalleryItem/ImageGalleryItem';
+import Button from './../Button/Button';
 import 'react-loader-spinner/dist/loader/css/react-spinner-loader.css';
 import s from './ImageGallery.module.css';
 
@@ -19,35 +19,59 @@ class ImageGallery extends Component {
   componentDidUpdate(prevProps, prevState) {
     const prevValue = prevProps.inputValue;
     const nextValue = this.props.inputValue;
-    const currentPage = this.props.page;
+    const currentPage = this.state.page;
 
     if (prevValue !== nextValue) {
-      this.setState({ loader: true });
-      fetch(
-        `${baseUrl}?q=${nextValue}&page${currentPage}&key=${key}&image_type=photo&orientation=horizontal&per_page=12`,
-      )
-        .then(res => res.json())
-        .then(images => this.setState({ images: images.hits }))
-        .finally(() => this.setState({ loader: false }));
+      this.setState({
+        loader: true,
+        images: [],
+        page: 1,
+      });
+      this.fetchImages();
     }
 
-    if (prevProps.page !== currentPage) {
+    if (prevState.page !== currentPage) {
+      if (currentPage === 1) {
+        return;
+      }
       this.setState({ loader: true });
-      fetch(
-        `${baseUrl}?q=${nextValue}&page${currentPage}&key=${key}&image_type=photo&orientation=horizontal&per_page=12`,
-      )
-        .then(res => res.json())
-        .then(images =>
-          this.setState({ images: [...this.state.images, ...images.hits] }),
-        );
+      this.fetchImages(this.state.images);
     }
   }
+
+  fetchImages = (prevImages = []) => {
+    const nextValue = this.props.inputValue;
+    const currentPage = this.state.page;
+    fetch(
+      `${baseUrl}?q=${nextValue}&page=${currentPage}&key=${key}&image_type=photo&orientation=horizontal&per_page=12`,
+    )
+      .then(res => res.json())
+      .then(images =>
+        this.setState({ images: [...prevImages, ...images.hits] }),
+      )
+      .finally(() => this.setState({ loader: false }));
+  };
+
+  handleBtnClick = () => {
+    this.setState({ page: this.state.page + 1 });
+  };
 
   render() {
     const images = this.state.images;
 
     return (
-      <div>
+      <div className={s.ImageGalleryContainer}>
+        <ul className={s.ImageGallery}>
+          {images.map(image => (
+            <ImageGalleryItem
+              key={image.id}
+              littlePicture={image.webformatURL}
+              largePicture={image.largeImageURL}
+              name={image.tags}
+              id={image.id}
+            />
+          ))}
+        </ul>
         {this.state.loader && (
           <Loader
             type="Puff"
@@ -57,18 +81,7 @@ class ImageGallery extends Component {
             timeout={3000}
           />
         )}
-        <ul className={s.ImageGallery}>
-          {images.map(image => (
-            <ImageGalleryItem
-              key={image.id}
-              littlePicture={image.webformatURL}
-              largePicture={image.largeImageURL}
-              name={image.tags}
-              showModal={this.toggleModal}
-              id={image.id}
-            />
-          ))}
-        </ul>
+        {images.length > 0 && <Button onClick={this.handleBtnClick} />}
       </div>
     );
   }
@@ -76,7 +89,6 @@ class ImageGallery extends Component {
 
 ImageGallery.propTypes = {
   inputValue: propTypes.string.isRequired,
-  page: propTypes.number.isRequired,
 };
 
 export default ImageGallery;

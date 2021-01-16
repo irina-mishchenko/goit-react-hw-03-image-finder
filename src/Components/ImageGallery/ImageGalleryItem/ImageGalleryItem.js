@@ -40,7 +40,6 @@ class ImageGalleryItem extends Component {
 }
 
 ImageGalleryItem.propTypes = {
-  key: propTypes.number.isRequired,
   littlePicture: propTypes.string.isRequired,
   largePicture: propTypes.string.isRequired,
   name: propTypes.string.isRequired,
