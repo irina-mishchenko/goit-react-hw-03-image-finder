@@ -45,9 +45,13 @@ class ImageGallery extends Component {
       `${baseUrl}?q=${nextValue}&page=${page}&key=${key}&image_type=photo&orientation=horizontal&per_page=12`,
     )
       .then(res => res.json())
-      .then(images =>
-        this.setState({ images: [...prevImages, ...images.hits] }),
-      )
+      .then(images => {
+        this.setState({ images: [...prevImages, ...images.hits] });
+        window.scrollTo({
+          top: document.documentElement.scrollHeight,
+          behavior: 'smooth',
+        });
+      })
       .finally(() => this.setState({ loader: false }));
   };
 
