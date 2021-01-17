@@ -35,15 +35,14 @@ class ImageGallery extends Component {
         return;
       }
       this.setState({ loader: true });
-      this.fetchImages(this.state.images);
+      this.fetchImages(this.state.images, currentPage);
     }
   }
 
-  fetchImages = (prevImages = []) => {
+  fetchImages = (prevImages = [], page = 1) => {
     const nextValue = this.props.inputValue;
-    const currentPage = this.state.page;
     fetch(
-      `${baseUrl}?q=${nextValue}&page=${currentPage}&key=${key}&image_type=photo&orientation=horizontal&per_page=12`,
+      `${baseUrl}?q=${nextValue}&page=${page}&key=${key}&image_type=photo&orientation=horizontal&per_page=12`,
     )
       .then(res => res.json())
       .then(images =>
@@ -81,7 +80,9 @@ class ImageGallery extends Component {
             timeout={3000}
           />
         )}
-        {images.length > 0 && <Button onClick={this.handleBtnClick} />}
+        {images.length > 0 && !this.state.loader && (
+          <Button onClick={this.handleBtnClick} />
+        )}
       </div>
     );
   }
